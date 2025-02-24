@@ -185,5 +185,55 @@ namespace Test_Taste_Console_Application.Domain.Services
                 --------------------+--------------------------------------------------
             */
         }
+
+        public void OutputPlanetsWithMoonsAndTheirAverageTemperatureToConsole()
+        {
+            try
+            {
+                Console.WriteLine("Fetching planet data from API...");
+                var planets = _planetService.GetAllPlanets().ToArray();
+
+                Console.WriteLine("Filtering planets that have moons...");
+                var planetsWithMoons = planets.Where(p => p.Moons != null && p.Moons.Any()).ToList();
+
+                if (!planetsWithMoons.Any())
+                {
+                    Console.WriteLine("No planets with moons found.");
+                    return;
+                }
+
+                Console.WriteLine("Calculating average moon temperatures...");
+                var columnSizes = new[] { 20, 30 };
+                var columnLabels = new[] { "Planet Name", "Average Moon Temperature (°C)" };
+
+                Console.WriteLine("Preparing console output...");
+                ConsoleWriter.CreateHeader(columnLabels, columnSizes);
+
+                foreach (var planet in planetsWithMoons)
+                {
+                    try
+                    {
+                        double avgTemp = planet.Moons.Average(m => m.avgTemp);
+                        ConsoleWriter.CreateText(new[] { planet.Id, avgTemp.ToString("F2") }, columnSizes);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Instance.Error($"Error calculating temperature for planet {planet.Id}: {ex.Message}");
+                        Console.WriteLine($"Error calculating temperature for {planet.Id}, skipping...");
+                    }
+                }
+
+                ConsoleWriter.CreateLine(columnSizes);
+                ConsoleWriter.CreateEmptyLines(2);
+
+                Console.WriteLine("Data successfully processed and displayed.");
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"Unexpected error in OutputPlanetsWithMoonsAndTheirAverageTemperatureToConsole: {ex.Message}");
+                Console.WriteLine("An error occurred while processing planet data. Please check the logs for details.");
+            }
+        }
+
     }
 }
