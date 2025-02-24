@@ -9,11 +9,15 @@ namespace Test_Taste_Console_Application.Domain.Objects
         public float MassValue { get; set; }
         public float MassExponent { get; set; }
 
+        public int avgTemp { get; set; }    
+
         public Moon(MoonDto moonDto)
         {
             Id = moonDto.Id;
             MassValue = moonDto.MassValue;
             MassExponent = moonDto.MassExponent;
+            MassExponent = moonDto.MassExponent;
+            avgTemp = moonDto.avgTemp;
         }
     }
 }
